@@ -1,8 +1,37 @@
+ /*
+    Hello,
+
+    Welcome to my jQuery Plugin!
+
+    This is a plugin to play a joke on someone to give them a nice surprise!
+
+    all you need to do is attach the id 'playMe' to a click event and let the games begin once clicked!
+
+    In the options, you can change a few of the initial settings.
+
+    Some settings will change once the plugin has been ran for 5 sec.
+
+    You can also change to an unlimited amount of images you want it to rotate though, include the url or upload to the jQueryImages folder.
+
+    Have fun playing around!
+
+    GitHub: https://github.com/bigandrew88/jQueryPlugin
+
+    Created by: Andrew Cloutier
+
+    Website template is from Murachs Javascript/jQuery.
+
+    Original jQuery Plug base from: https://www.udemy.com/share/101rQOAEcaeFpbR30C/
+
+    All copyrights go to Original owners.
+    */
+
 (function($){
     $.fn.playMe = function(options){
-        var audio = new Audio('media/music.mp3');
+        var audio = new Audio('media/jQueryMedia/music.mp3');
         $("#playMe").click(function(){
             audio.play();
+            randomImage();
         });
 
         var settings = $.extend({
@@ -13,10 +42,12 @@
                 height: "30px"
             },
             imageBorder: "5px solid #ffffff",
-            imageArr: ["images/rick1.jpg","images/rick2.jpg","images/rick3.jpg","images/rick4.jpg"],
+            imageArr: ["images/jQueryImages/rick1.jpg","images/jQueryImages/rick2.jpg","images/jQueryImages/rick3.jpg","images/jQueryImages/rick4.jpg"],
             borderRadius: "5px",
             imageWidth: "500px",
             imageHeight: "400px",
+            family: "Cursive",
+            familySize: '20px',
             imageCaption: {
                 exist: true,
                 color: "#ffffff",
@@ -26,8 +57,36 @@
             close: null
         }, options)
 
+        var newImage;
+            function randomImage(){
+                var i = 0;
+                newImage = setInterval(newImage2,5000);
+                function newImage2(){  
+                    $image.fadeOut(1000, function () {
+                        $('img').each(function(){
+                            $(this).attr("src", settings.imageArr[Math.floor(Math.random() * settings.imageArr.length)]);
+                        })
+                        $image.attr("src", settings.imageArr[i]);
+                        $image.fadeIn(1000);
+                        $overlay.append($image);
+                        let r = Math.floor(Math.random() * 255)
+                        let b = Math.floor(Math.random() * 255)
+                        let g = Math.floor(Math.random() * 255)
+                        let a = Math.floor(Math.random() * 10) / 10
+                        $("*").css(
+                            "background", 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')',
+                        );
+                    });
+                    if(i == (settings.imageArr.length - 1)){
+                        i = 0; 
+                    } else {
+                        i++;
+                    }
+                }
+            }
+        var $image, $overlay;
         return this.each(function(){
-            var $overlay, $closeButton, $image, $imageCaption;
+            var $closeButton, $imageCaption;
             setOverlayProperties();
             setClosebuttonProperties();
             setImageProperties();
@@ -38,6 +97,11 @@
                 $('img').each(function(){
                     $(this).attr("src", settings.imageArr[Math.floor(Math.random() * settings.imageArr.length)]);
                 })
+                
+                
+                $('*').css('font-family',settings.family);
+                $('*').css('font-size',settings.familySize)
+                
 
                 var imageSource = settings.imageArr[Math.floor(Math.random() * settings.imageArr.length)];
                 $image.attr("src", imageSource);
@@ -61,11 +125,10 @@
                     "border": settings.imageBorder,
                     "border-radius": settings.borderRadius
                 });
-
                 $overlay.append($image);
 
                 if(settings.imageCaption.exist){
-                    $imageCaption = $("<p></p>");
+                    $imageCaption = $("<p>You have been Rick Rolled by Andrew Cloutier</p>");
                     $imageCaption.css({
                         "color": settings.imageCaption.color,
                         "font-size": settings.imageCaption.fontSize
@@ -85,7 +148,7 @@
                     "display": "none",
                     "text-align": "center",
                     "width": "100%",
-                    "height": "100%",
+                    "height": "200%",
                     "padding-top": "5%"
                 });
                 $("body").append($overlay);
@@ -123,7 +186,9 @@
                 $overlay.animate({opacity: 0.1}, function(){
                     $overlay.hide();
                     audio.pause();
+                    clearInterval(newImage);
                     location.reload();
+                    alert("Thanks for Playing Me!");
                 })
                 
             })
